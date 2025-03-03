@@ -22,5 +22,11 @@ func validateOrder(orderRequest *model.OrderRequest) error {
 		return fmt.Errorf("no items in request: %w", ErrInvalidOrderRequest)
 	}
 
+	for _, item := range orderRequest.Items {
+		if item.Quantity < 1 {
+			return fmt.Errorf("invalid quantity for product %d: %w", item.ProductID, ErrInvalidOrderRequest)
+		}
+	}
+
 	return nil
 }
