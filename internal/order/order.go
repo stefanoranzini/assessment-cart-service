@@ -33,38 +33,43 @@ func (s *OrderService) Insert(ctx context.Context, orderRequest *model.OrderRequ
 		return nil, err
 	}
 
-	var items []*model.Item
-	var orderPrice = decimal.Zero
-	var orderVat = decimal.Zero
-	for _, item := range orderRequest.Items {
-		itemPrice, err := s.productDao.FetchProductPrice(ctx, item.ProductID)
-		if err != nil {
-			return nil, err
-		}
-
-		itemVat := itemPrice.Mul(defaultVatPercentage)
-		items = append(items, &model.Item{
-			ProductID: item.ProductID,
-			Quantity:  item.Quantity,
-			Price:     itemPrice,
-			Vat:       itemVat,
-		})
-
-		orderPrice = orderPrice.Add(itemPrice.Mul(decimal.NewFromInt(int64(item.Quantity))))
-		orderVat = orderVat.Add(itemVat.Mul(decimal.NewFromInt(int64(item.Quantity))))
+	var order = model.Order{
+		OrderPrice: decimal.Zero,
+		OrderVat:   decimal.Zero,
+		Items:      make([]*model.Item, len(orderRequest.Items)),
 	}
 
-	orderID, err := s.orderDao.Insert(ctx, orderPrice, orderVat)
+	for i, item := range orderRequest.Items {
+		s.processItem(ctx, &order, &item, i)
+	}
+
+	orderID, err := s.orderDao.Insert(ctx, order.OrderPrice, order.OrderVat)
 	if err != nil {
 		return nil, err
 	}
+	order.OrderId = orderID
 
-	return &model.Order{
-		OrderId:    orderID,
-		OrderPrice: orderPrice,
-		OrderVat:   orderVat,
-		Items:      items,
-	}, nil
+	return &order, nil
+}
+
+func (s *OrderService) processItem(ctx context.Context, order *model.Order, item *model.ItemRequest, itemPosition int) error {
+	itemPrice, err := s.productDao.FetchProductPrice(ctx, item.ProductID)
+	if err != nil {
+		return err
+	}
+
+	itemVat := itemPrice.Mul(defaultVatPercentage)
+	order.Items[itemPosition] = &model.Item{
+		ProductID: item.ProductID,
+		Quantity:  item.Quantity,
+		Price:     itemPrice,
+		Vat:       itemVat,
+	}
+
+	quantity := decimal.NewFromInt(int64(item.Quantity))
+	order.OrderPrice = order.OrderPrice.Add(itemPrice.Mul(quantity))
+	order.OrderVat = order.OrderVat.Add(itemVat.Mul(quantity))
+	return nil
 }
 
 func validateOrder(orderRequest *model.OrderRequest) error {
