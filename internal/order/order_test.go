@@ -21,11 +21,11 @@ func TestValidate(t *testing.T) {
 		orderRequest := &model.OrderRequest{
 			Items: []model.ItemRequest{
 				{
-					ProductID: 1,
+					ProductId: 1,
 					Quantity:  0,
 				},
 				{
-					ProductID: 2,
+					ProductId: 2,
 					Quantity:  1,
 				},
 			},

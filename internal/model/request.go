@@ -5,6 +5,6 @@ type OrderRequest struct {
 }
 
 type ItemRequest struct {
-	ProductID int `json:"product_id"`
+	ProductId int `json:"product_id"`
 	Quantity  int `json:"quantity"`
 }

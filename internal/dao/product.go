@@ -17,12 +17,12 @@ func NewProductDao(db *sql.DB) *ProductDao {
 	return &ProductDao{db: db}
 }
 
-func (p *ProductDao) FetchProductPrice(ctx context.Context, productID int) (decimal.Decimal, error) {
+func (p *ProductDao) FetchProductPrice(ctx context.Context, productId int) (decimal.Decimal, error) {
 	var productPrice decimal.Decimal
-	err := p.db.QueryRowContext(ctx, fetchProductPriceQuery, productID).Scan(&productPrice)
+	err := p.db.QueryRowContext(ctx, fetchProductPriceQuery, productId).Scan(&productPrice)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return decimal.Zero, NewErrNoProductFound(productID)
+			return decimal.Zero, NewErrNoProductFound(productId)
 		}
 		return decimal.Zero, err
 	}

@@ -43,24 +43,24 @@ func (s *OrderService) Insert(ctx context.Context, orderRequest *model.OrderRequ
 		s.processItem(ctx, &order, &item, i)
 	}
 
-	orderID, err := s.orderDao.Insert(ctx, order.OrderPrice, order.OrderVat)
+	orderId, err := s.orderDao.Insert(ctx, order.OrderPrice, order.OrderVat)
 	if err != nil {
 		return nil, err
 	}
-	order.OrderId = orderID
+	order.OrderId = orderId
 
 	return &order, nil
 }
 
 func (s *OrderService) processItem(ctx context.Context, order *model.Order, item *model.ItemRequest, itemPosition int) error {
-	itemPrice, err := s.productDao.FetchProductPrice(ctx, item.ProductID)
+	itemPrice, err := s.productDao.FetchProductPrice(ctx, item.ProductId)
 	if err != nil {
 		return err
 	}
 
 	itemVat := itemPrice.Mul(defaultVatPercentage)
 	order.Items[itemPosition] = &model.Item{
-		ProductID: item.ProductID,
+		ProductId: item.ProductId,
 		Quantity:  item.Quantity,
 		Price:     itemPrice,
 		Vat:       itemVat,
@@ -79,7 +79,7 @@ func validateOrder(orderRequest *model.OrderRequest) error {
 
 	for _, item := range orderRequest.Items {
 		if item.Quantity < 1 {
-			return fmt.Errorf("invalid quantity for product %d: %w", item.ProductID, ErrInvalidOrderRequest)
+			return fmt.Errorf("invalid quantity for product %d: %w", item.ProductId, ErrInvalidOrderRequest)
 		}
 	}
 
