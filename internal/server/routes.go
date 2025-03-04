@@ -11,7 +11,11 @@ import (
 
 const applicationJsonContentType = "application/json"
 
-func insertOrder(w http.ResponseWriter, r *http.Request) {
+type inserOrderHandler struct {
+	orderService *order.OrderService
+}
+
+func (h *inserOrderHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
@@ -24,7 +28,7 @@ func insertOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	insertedOrder, err := order.Insert(&orderRequest)
+	insertedOrder, err := h.orderService.Insert(r.Context(), &orderRequest)
 	if err != nil {
 		if errors.Is(err, order.ErrInvalidOrderRequest) {
 			w.WriteHeader(http.StatusBadRequest)

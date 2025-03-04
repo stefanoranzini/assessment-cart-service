@@ -1,0 +1,10 @@
+CREATE TABLE product (
+    id INTEGER PRIMARY KEY NOT NULL,
+    price DECIMAL(10, 2) NOT NULL
+);
+
+CREATE TABLE `order` (
+    id INTEGER PRIMARY KEY NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    vat DECIMAL(10, 2) NOT NULL
+);

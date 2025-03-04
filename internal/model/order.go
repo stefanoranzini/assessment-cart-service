@@ -6,7 +6,7 @@ type Order struct {
 	OrderId    int             `json:"order_id"`
 	OrderPrice decimal.Decimal `json:"order_price"`
 	OrderVat   decimal.Decimal `json:"order_vat"`
-	Items      []Item          `json:"items"`
+	Items      []*Item         `json:"items"`
 }
 
 type Item struct {
