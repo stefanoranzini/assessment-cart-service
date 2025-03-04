@@ -3,6 +3,7 @@ package dao
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	"github.com/shopspring/decimal"
 )
@@ -22,7 +23,7 @@ func (p *ProductDao) FetchProductPrice(ctx context.Context, productId int) (deci
 	err := p.db.QueryRowContext(ctx, fetchProductPriceQuery, productId).Scan(&productPrice)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return decimal.Zero, NewErrNoProductFound(productId)
+			return decimal.Zero, fmt.Errorf("missing %d product: %w", productId, ErrNoProductFound)
 		}
 		return decimal.Zero, err
 	}
