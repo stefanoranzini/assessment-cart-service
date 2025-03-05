@@ -15,10 +15,10 @@ type Server struct {
 	mux  *http.ServeMux
 }
 
-func New(port int) *Server {
+func New(port int, dataSourceName string) *Server {
 	serverMux := http.NewServeMux()
 
-	db, err := db.ConnectSQLite3("cart.db")
+	db, err := db.ConnectSQLite3(dataSourceName)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to connect to database")
 	}

@@ -17,6 +17,8 @@ func TestProductDao(t *testing.T) {
 		sut := NewProductDao(testDb)
 
 		t.Run("given an existing product id, it should return the product price", func(t *testing.T) {
+			helper.InsertProduct(t, testDb, 1, decimal.NewFromInt(1))
+
 			acutalPrice, err := sut.FetchProductPrice(t.Context(), 1)
 
 			assert.NoError(t, err)

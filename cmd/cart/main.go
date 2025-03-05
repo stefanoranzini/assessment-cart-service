@@ -6,7 +6,8 @@ import (
 )
 
 func main() {
-	server := server.New(9090)
+	// In a real case scenario those values will be read from the runtime configuration/environment
+	server := server.New(9090, "cart.db")
 	err := server.Start()
 
 	if err != nil {

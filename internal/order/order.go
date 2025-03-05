@@ -40,7 +40,10 @@ func (s *OrderService) Insert(ctx context.Context, orderRequest *model.OrderRequ
 	}
 
 	for i, item := range orderRequest.Items {
-		s.processItem(ctx, &order, &item, i)
+		err = s.processItem(ctx, &order, item, i)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	orderId, err := s.orderDao.Insert(ctx, order.OrderPrice, order.OrderVat)
